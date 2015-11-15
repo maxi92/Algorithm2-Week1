@@ -1,5 +1,9 @@
 import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+
 import java.util.Iterator;
 
 public class SAP {
@@ -118,8 +122,8 @@ public class SAP {
        wsap = new BFSAP(G);
        vsap.bfs(v);
        wsap.bfs(w);
-       int mindist = 0;
-       int ancestor = 0;
+       int mindist = -1;
+       int ancestor = -1;
        boolean flag = false;
        
        int result = 0;
@@ -170,8 +174,8 @@ public class SAP {
        wsap = new BFSAP(G);
        vsap.bfs(v);
        wsap.bfs(w);
-       int mindist = 0;
-       int ancestor = 0;
+       int mindist = -1;
+       int ancestor = -1;
        boolean flag = false;
        
        int result = 0;
@@ -187,9 +191,9 @@ public class SAP {
                    flag = true;
                    continue;
                }
-               if(vsap.distance[t]+wsap.distance[t] < mindist)
+               if(vsap.distance[t] + wsap.distance[t] < mindist)
                {
-                   mindist = vsap.distance[t]+wsap.distance[t];
+                   mindist = vsap.distance[t] + wsap.distance[t];
                    ancestor = t;
                }
            }
@@ -213,9 +217,20 @@ public class SAP {
    {
        validcheck(v);
        validcheck(w);
-       return calc(v, w, true);
+       return calc(v, w, false);
    }
 
    // do unit testing of this class
-   //public static void main(String[] args)
+   public static void main(String[] args) {
+       In in = new In(args[0]);
+       Digraph G = new Digraph(in);
+       SAP sap = new SAP(G);
+       while (!StdIn.isEmpty()) {
+           int v = StdIn.readInt();
+           int w = StdIn.readInt();
+           int length   = sap.length(v, w);
+           int ancestor = sap.ancestor(v, w);
+           StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
+       }
+   }
 }

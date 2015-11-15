@@ -1,8 +1,11 @@
 import java.util.HashMap;
+
 import edu.princeton.cs.algs4.Bag;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
 
 public class WordNet {
 
@@ -63,7 +66,7 @@ public class WordNet {
            int id = Integer.parseInt(tokens[0]);
            for (int i=1; i<tokens.length; i++)
            {
-               wordgraph.addEdge(Integer.parseInt(tokens[i]), id);
+               wordgraph.addEdge(id, Integer.parseInt(tokens[i]));
            }
        }
    }
@@ -83,7 +86,7 @@ public class WordNet {
    // distance between nounA and nounB (defined below)
    public int distance(String nounA, String nounB)
    {
-       if(isNoun(nounA) || isNoun(nounB) != true) throw new IllegalArgumentException();
+       if(isNoun(nounA) && isNoun(nounB) == false) throw new IllegalArgumentException();
        return sap.length(noun2id.get(nounA), noun2id.get(nounB));
    }
 
@@ -91,10 +94,32 @@ public class WordNet {
    // in a shortest ancestral path (defined below)
    public String sap(String nounA, String nounB)
    {
-       if(isNoun(nounA) || isNoun(nounB) != true) throw new IllegalArgumentException();
-       return this.id2synset.get(sap.ancestor(this.noun2id.get(nounA), this.noun2id.get(nounB)));
+       if(isNoun(nounA) && isNoun(nounB) != true) throw new IllegalArgumentException();
+       return id2synset.get(sap.ancestor(noun2id.get(nounA), noun2id.get(nounB)));
    }
 
    // do unit testing of this class
-   //public static void main(String[] args)
+   public static void main(String[] args) {
+       WordNet wordNet = new WordNet(args[0], args[1]);
+
+       while (!StdIn.isEmpty()) {
+           String nounA = StdIn.readString();
+           String nounB = StdIn.readString();
+
+           if (!wordNet.isNoun(nounA)) {
+               StdOut.printf("%s is not a noun!\n", nounA);
+               continue;
+           }
+
+           if (!wordNet.isNoun(nounB)) {
+               StdOut.printf("%s is not a noun!\n", nounB);
+               continue;
+           }
+
+           int distance = wordNet.distance(nounA, nounB);
+           String ancestor = wordNet.sap(nounA, nounB);
+
+           StdOut.printf("distance = %d, ancestor = %s\n", distance, ancestor);
+       }
+   }
 }
