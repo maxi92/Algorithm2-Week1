@@ -4,7 +4,7 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class Outcast {
    
-   WordNet wordnet;
+   private WordNet wordnet;
    public Outcast(WordNet wordnet)         // constructor takes a WordNet object
    {
        this.wordnet = wordnet;
@@ -16,12 +16,12 @@ public class Outcast {
        int dist; 
        String result = nouns[0];
        
-       for(String noun : nouns)
+       for (String noun : nouns)
        {
            dist = 0;
-           for(String arrnoun : nouns)
+           for (String arrnoun : nouns)
            {
-               if(arrnoun != noun)
+               if (!arrnoun.equals(noun))
                {
                    
                    dist += wordnet.distance(noun, arrnoun);

@@ -8,17 +8,14 @@ import java.util.Iterator;
 
 public class SAP {
 
-    int v;
-    int length;
-    int ancestral;
-    Digraph G;
-    BFSAP vsap, wsap;
+    private Digraph G;
+    private BFSAP vsap, wsap;
     
     private class BFSAP implements Iterable<Integer> {
         private boolean[] marked;
         private int[] distance;
-        Queue<Integer> queue;    //queue for BFS
-        Queue<Integer> cvertex; //the vertex that connected with v, including v itself, this is for iterator
+        private Queue<Integer> queue;    //queue for BFS
+        private Queue<Integer> cvertex; //the vertex that connected with v, including v itself, this is for iterator
         
         public BFSAP(Digraph G) 
         {
@@ -38,10 +35,10 @@ public class SAP {
             distance[v] = 0;
             queue.enqueue(v);
             cvertex.enqueue(v);
-            while(!queue.isEmpty())
+            while (!queue.isEmpty())
             {
                 int t = queue.dequeue();
-                for(int w: G.adj(t))
+                for (int w: G.adj(t))
                 {
                     if (!marked[w])
                     {
@@ -56,17 +53,17 @@ public class SAP {
         
         public void bfs(Iterable<Integer> v)
         {
-            for(int w : v)
+            for (int w : v)
             {
                 marked[w] = true;
                 distance[w] = 0;
                 queue.enqueue(w);
                 cvertex.enqueue(w);
             }
-            while(!queue.isEmpty())
+            while (!queue.isEmpty())
             {
                 int t = queue.dequeue();
-                for(int w: G.adj(t))
+                for (int w: G.adj(t))
                 {
                     if (!marked[w])
                     {
@@ -95,7 +92,6 @@ public class SAP {
    {
        if (G == null)
            throw new java.lang.NullPointerException();
-       v = G.V();
        this.G = new Digraph(G);
        this.vsap = new BFSAP(G);
        this.wsap = new BFSAP(G);
@@ -103,13 +99,13 @@ public class SAP {
    
    private void validcheck(int v)
    {
-       if(v<0 || v>G.V()-1)
+       if (v < 0 || v > G.V()-1)
            throw new java.lang.IndexOutOfBoundsException();
    }
    
    private void validcheck(Iterable<Integer> v)
    {
-       for(int w : v)
+       for (int w : v)
        {
            validcheck(w);
        }
@@ -128,18 +124,18 @@ public class SAP {
        
        int result = 0;
        
-       for(int t : vsap)
+       for (int t : vsap)
        {
-           if(vsap.isConnected(t) && wsap.isConnected(t))
+           if (vsap.isConnected(t) && wsap.isConnected(t))
            {
-               if(!flag)
+               if (!flag)
                {
                    mindist = vsap.distance[t] + wsap.distance[t];
                    ancestor = t;
                    flag = true;
                    continue;
                }
-               if(vsap.distance[t]+wsap.distance[t] < mindist)
+               if (vsap.distance[t] + wsap.distance[t] < mindist)
                {
                    mindist = vsap.distance[t]+wsap.distance[t];
                    ancestor = t;
@@ -147,8 +143,8 @@ public class SAP {
            }
        }
        
-       if(type == true) result = mindist;
-       if(type == false) result = ancestor;
+       if (type) result = mindist;
+       if (!type) result = ancestor;
        return result;
    }
    
@@ -180,18 +176,18 @@ public class SAP {
        
        int result = 0;
        
-       for(int t : vsap)
+       for (int t : vsap)
        {
-           if(vsap.isConnected(t) && wsap.isConnected(t))
+           if (vsap.isConnected(t) && wsap.isConnected(t))
            {
-               if(!flag)
+               if (!flag)
                {
                    mindist = vsap.distance[t] + wsap.distance[t];
                    ancestor = t;
                    flag = true;
                    continue;
                }
-               if(vsap.distance[t] + wsap.distance[t] < mindist)
+               if (vsap.distance[t] + wsap.distance[t] < mindist)
                {
                    mindist = vsap.distance[t] + wsap.distance[t];
                    ancestor = t;
@@ -199,8 +195,8 @@ public class SAP {
            }
        }
        
-       if(type == true) result = mindist;
-       if(type == false) result = ancestor;
+       if (type) result = mindist;
+       if (!type) result = ancestor;
        return result;
    }
    

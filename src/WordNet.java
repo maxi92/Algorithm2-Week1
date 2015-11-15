@@ -9,10 +9,10 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class WordNet {
 
-   SAP sap;
-   HashMap<Integer,String> id2synset;
-   HashMap<String,Bag<Integer>> noun2id;
-   Digraph wordgraph;
+   private SAP sap;
+   private HashMap<Integer, String> id2synset;
+   private HashMap<String, Bag<Integer>> noun2id;
+   private Digraph wordgraph;
    
    // constructor takes the name of the two input files
    public WordNet(String synsets, String hypernyms)
@@ -21,15 +21,34 @@ public class WordNet {
        noun2id = new HashMap<String, Bag<Integer>>();
        readSynsets(synsets);
        readHypernyms(hypernyms);
-       DirectedCycle cycle = new DirectedCycle(wordgraph);
-       if (cycle.hasCycle()) throw new java.lang.IllegalArgumentException();
+       checkcycle(wordgraph);
+       checkrooted(wordgraph);
        
        sap = new SAP(wordgraph);
    }
    
-   private void readSynsets(String Filesynsets)
+   private void checkcycle(Digraph g)
    {
-       In input = new In(Filesynsets);
+       DirectedCycle cycle = new DirectedCycle(g);
+       if (cycle.hasCycle()) throw new java.lang.IllegalArgumentException();
+   }
+   
+   private void checkrooted(Digraph g)
+   {
+       int num = 0;
+       for (int i = 0; i < g.V(); i++)
+       {
+           if (!g.adj(i).iterator().hasNext())
+               num++;
+       }
+       
+       if (num != 1)
+           throw new java.lang.IllegalArgumentException();
+   }
+   
+   private void readSynsets(String fileSynsets)
+   {
+       In input = new In(fileSynsets);
        Bag<Integer> bag;
 
        while (input.hasNextLine()) 
@@ -38,9 +57,9 @@ public class WordNet {
            int id = Integer.parseInt(tokens[0]);
            id2synset.put(id, tokens[1]);
            
-           for(String noun: tokens[1].split(" "))
+           for (String noun: tokens[1].split(" "))
            {
-               if(!noun2id.containsKey(noun))
+               if (!noun2id.containsKey(noun))
                {
                    bag = new Bag<Integer>();
                    bag.add(id);
@@ -55,16 +74,16 @@ public class WordNet {
        }
    }
    
-   private void readHypernyms(String Filehypernyms)
+   private void readHypernyms(String fileHypernyms)
    {
-       In input = new In(Filehypernyms);
+       In input = new In(fileHypernyms);
        wordgraph = new Digraph(id2synset.size());
        
-       while(input.hasNextLine())
+       while (input.hasNextLine())
        {
-           String tokens[] = input.readLine().split(",");
+           String[] tokens = input.readLine().split(",");
            int id = Integer.parseInt(tokens[0]);
-           for (int i=1; i<tokens.length; i++)
+           for (int i = 1; i < tokens.length; i++)
            {
                wordgraph.addEdge(id, Integer.parseInt(tokens[i]));
            }
@@ -80,13 +99,15 @@ public class WordNet {
    // is the word a WordNet noun?
    public boolean isNoun(String word)
    {
+       if (word == null) throw new java.lang.NullPointerException();
        return noun2id.containsKey(word);
    }
 
    // distance between nounA and nounB (defined below)
    public int distance(String nounA, String nounB)
    {
-       if(isNoun(nounA) && isNoun(nounB) == false) throw new IllegalArgumentException();
+       if (nounA == null || nounB == null) throw new java.lang.NullPointerException();
+       if (!(isNoun(nounA) && isNoun(nounB))) throw new IllegalArgumentException();
        return sap.length(noun2id.get(nounA), noun2id.get(nounB));
    }
 
@@ -94,7 +115,8 @@ public class WordNet {
    // in a shortest ancestral path (defined below)
    public String sap(String nounA, String nounB)
    {
-       if(isNoun(nounA) && isNoun(nounB) != true) throw new IllegalArgumentException();
+       if (nounA == null || nounB == null) throw new java.lang.NullPointerException();
+       if (!(isNoun(nounA) && isNoun(nounB))) throw new IllegalArgumentException();
        return id2synset.get(sap.ancestor(noun2id.get(nounA), noun2id.get(nounB)));
    }
 
